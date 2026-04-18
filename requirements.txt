@@ -5,3 +5,4 @@ mongoengine
 pandas
 fastapi-users
 passlib[bcrypt]
+bcrypt==4.0.1

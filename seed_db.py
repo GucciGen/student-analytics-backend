@@ -1,81 +1,58 @@
+import random  # Повертаємо random для кількості
 from faker import Faker
-import random
 from mongoengine import connect
-from models import Student, Subject, Grade
+from models import Student, Subject
 from auth import get_password_hash, generate_student_email, generate_random_password
 
 # Підключаємось до бази
-connect(host="mongodb+srv://sviaticrrocer_db_user:KhhdFOGFIq98QMIx@cluster0.ncqipo7.mongodb.net/student_analytics?retryWrites=true&w=majority")
+connect(
+    host="mongodb+srv://sviaticrrocer_db_user:KhhdFOGFIq98QMIx@cluster0.ncqipo7.mongodb.net/student_analytics?retryWrites=true&w=majority"
+)
 
-# Налаштовуємо Faker на українську мову
-fake = Faker('uk_UA')
+# Налаштовуємо Faker
+fake = Faker("uk_UA")
+
 
 def seed_database():
-    print("Очищуємо стару базу (це може зайняти пару секунд)...")
+    print("Очищуємо стару базу...")
     Student.objects().delete()
     Subject.objects().delete()
-    Grade.objects().delete()
 
     print("Створюємо предмети...")
-    subject_names = ["Вища математика", "Програмування на Python", "Бази даних", "Веб-дизайн", "Мережеві технології", "Архітектура комп'ютерів", "Кібербезпека"]
-    subjects = []
+    subject_names = [
+        "Вища математика",
+        "Програмування на Python",
+        "Бази даних",
+        "Веб-дизайн",
+        "Мережеві технології",
+    ]
     for name in subject_names:
-        sub = Subject(name=name, teacher_name=fake.name())
-        sub.save()
-        subjects.append(sub)
+        Subject(name=name, teacher_name=fake.name()).save()
 
-    print("Формуємо групи та зараховуємо студентів...")
+    print("Формуємо групи...")
     departments = ["ТІР", "ПД", "КНД", "КІД"]
-    
-    groups = []
-    for dep in departments:
-        for i in range(1, 5):
-            groups.append(f"{dep}-4{i}")
+    groups = [f"{dep}-4{i}" for dep in departments for i in range(1, 5)]
 
-    students = []
-    total_students_count = 0
-    
-    for group_name in groups:
-        students_in_this_group = random.randint(20, 30)
-        total_students_count += students_in_this_group
-        
-        # Створюємо кожного студента індивідуально
-        for _ in range(students_in_this_group):
-            email = generate_student_email()
-            
-            # Генеруємо унікальний пароль та одразу його хешуємо
-            raw_password = generate_random_password()
-            hashed_pwd = get_password_hash(raw_password)
-            
-            student = Student(
-                first_name=fake.first_name(),
-                last_name=fake.last_name(),
-                group_code=group_name,
-                enrollment_year=2024,
-                email=email,
-                hashed_password=hashed_pwd,
-                role="student"
-            )
-            student.save()
-            students.append(student)
-            
-    print(f"Успішно створено {total_students_count} студентів у {len(groups)} групах!")
+    total_students = random.randint(150, 200)
+    print(f"Зараховуємо {total_students} студентів...")
 
-    print("Виставляємо випадкові оцінки (це найдовший етап, зачекай трішки)...")
-    grade_types = ['exam', 'homework', 'lab']
-    total_grades_count = 0
-    
-    for student in students:
-        for _ in range(random.randint(3, 8)):
-            Grade(
-                student=student,
-                subject=random.choice(subjects),
-                score=round(random.uniform(40.0, 100.0), 2),
-                grade_type=random.choice(grade_types)
-            ).save()
-            total_grades_count += 1
+    for i in range(total_students):
+        email = generate_student_email()
+        raw_password = generate_random_password()
+        hashed_pwd = get_password_hash(raw_password)
 
-    print(f"Базу повністю наповнено! Згенеровано {total_grades_count} оцінок.")
+        Student(
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            group_code=groups[i % len(groups)],
+            enrollment_year=2024,
+            email=email,
+            hashed_password=hashed_pwd,
+            role="student",
+        ).save()
+
+    print(f"Базу наповнено: створено {total_students} студентів без оцінок.")
+
 
 if __name__ == "__main__":
     seed_database()

@@ -19,7 +19,7 @@ def create_super_admin():
             set__hashed_password=get_password_hash(password),
             set__role="admin"
         )
-        print(f"✅ Адміністратор {email} вже існував. Права та пароль успішно відновлено!")
+        print(f"Адміністратор {email} вже існував. Права та пароль успішно відновлено!")
     else:
         # Якщо його видалили – створюємо заново
         Student(
@@ -31,7 +31,7 @@ def create_super_admin():
             hashed_password=get_password_hash(password),
             role="admin"
         ).save()
-        print(f"✅ Супер-адміністратор {email} успішно створений з нуля!")
+        print(f"Супер-адміністратор {email} успішно створений з нуля!")
 
 if __name__ == "__main__":
     create_super_admin()
