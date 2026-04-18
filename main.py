@@ -60,7 +60,6 @@ async def create_student(student_data: StudentCreate, current_user = Depends(req
     raw_password = generate_random_password()
     
     # 2. Хешуємо пароль перед збереженням! 
-    # (Заміни get_password_hash на функцію, яку ти використовуєш для логіна)
     hashed_pwd = get_password_hash(raw_password)
 
     # 3. Створюємо запис у базі даних
@@ -69,9 +68,9 @@ async def create_student(student_data: StudentCreate, current_user = Depends(req
         last_name=student_data.last_name,
         group_code=student_data.group_code,
         enrollment_year=student_data.enrollment_year,
-        email=new_email,             # <--- Додаємо пошту
-        hashed_password=hashed_pwd,  # <--- Додаємо зашифрований пароль
-        role="student"               # <--- Встановлюємо роль
+        email=new_email,
+        hashed_password=hashed_pwd,
+        role="student"
     )
     new_student.save()
     
@@ -86,7 +85,7 @@ async def create_student(student_data: StudentCreate, current_user = Depends(req
         },
         "credentials": {
             "email": new_email,
-            "password": raw_password  # Цей пароль фронтенд покаже адміну лише 1 раз!
+            "password": raw_password
         }
     }
 

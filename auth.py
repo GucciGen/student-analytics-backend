@@ -43,7 +43,7 @@ def generate_student_email():
 async def register(user_data: UserRegister):
     if User.objects(email=user_data.email).first():
         raise HTTPException(status_code=400, detail="Цей email вже зареєстровано")
-    hashed_pw = get_password_hash(user_data.password) # Використовуємо нашу функцію
+    hashed_pw = get_password_hash(user_data.password)
     new_user = User(email=user_data.email, hashed_password=hashed_pw)
     new_user.save()
     return {"message": "Користувача успішно створено!"}
