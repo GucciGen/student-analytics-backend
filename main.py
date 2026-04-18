@@ -103,7 +103,8 @@ async def get_all_students():
             "last_name": s.last_name,
             "group_code": s.group_code,
             "enrollment_year": s.enrollment_year,
-            "email": s.email
+            "email": s.email,
+            "absences": getattr(s, 'absences', 0)
         })
     return result
 
