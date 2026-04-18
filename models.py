@@ -10,6 +10,7 @@ class Student(Document):
     email = StringField(unique=True) 
     hashed_password = StringField()
     role = StringField(default="student")
+    absences = IntField(default=0)
 
 # Колекція Предметів
 class Subject(Document):

@@ -11,6 +11,13 @@ class StudentCreate(BaseModel):
     group_code: str
     enrollment_year: int = 2024
 
+class StudentUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    group_code: Optional[str] = None
+    enrollment_year: Optional[int] = None
+    absences: Optional[int] = None
+
 #Схема для відповіді на запит про студента
 class StudentResponse(BaseModel):
     id: str
@@ -19,6 +26,7 @@ class StudentResponse(BaseModel):
     group_code: str
     enrollment_year: int
     email: str
+    absences: int
 
 # --- СХЕМИ ДЛЯ ПРЕДМЕТІВ ---
 class SubjectCreate(BaseModel):

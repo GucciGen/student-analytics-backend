@@ -5,7 +5,7 @@ import pandas as pd
 from mongoengine import connect, disconnect
 from fastapi.middleware.cors import CORSMiddleware
 from models import Student, Subject, Grade
-from schemas import StudentCreate, StudentResponse, SubjectCreate, SubjectResponse, GradeCreate, GradeResponse
+from schemas import StudentCreate, StudentResponse, StudentUpdate, SubjectCreate, SubjectResponse, GradeCreate, GradeResponse
 from auth import (
     auth_router, 
     oauth2_scheme, 
@@ -106,6 +106,31 @@ async def get_all_students():
             "email": s.email
         })
     return result
+
+@app.put("/api/students/{student_id}", tags=["Students"])
+async def update_student(
+    student_id: str, 
+    student_data: StudentUpdate, 
+    current_user = Depends(require_admin)
+):
+    """
+    Оновлення даних студента. Доступно тільки адміну.
+    """
+    student = Student.objects(id=student_id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Студента не знайдено")
+
+    # Конвертуємо отримані дані в словник, виключаючи порожні поля
+    update_data = student_data.dict(exclude_unset=True)
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Не надано даних для оновлення")
+
+    # Оновлюємо поля в базі
+    student.update(**update_data)
+    student.reload() # Перезавантажуємо об'єкт з бази
+
+    return {"message": "Дані студента оновлено успішно", "student": student.to_json()}
 
 @app.delete("/api/students/{student_id}", tags=["Students"])
 async def delete_student(student_id: str, current_user = Depends(require_admin)):

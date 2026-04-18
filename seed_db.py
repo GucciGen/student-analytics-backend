@@ -56,6 +56,7 @@ def seed_database():
             email=email,
             hashed_password=hashed_pwd,
             role="student",
+            absences=random.randint(0, 50)
         ).save()
         students.append(student)
 
