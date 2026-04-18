@@ -1,5 +1,5 @@
 from mongoengine import connect
-from models import Student
+from models import User
 from auth import get_password_hash
 
 # Підключаємося до твоєї хмарної бази
@@ -9,9 +9,10 @@ def create_super_admin():
     email = "admin@gmail.com"
     password = "admin"
     
-    print("Шукаємо адміністратора в базі...")
-    # Шукаємо, чи існує вже такий email
-    admin_user = Student.objects(email=email).first()
+    print("Шукаємо адміністратора в базі (в таблиці User)...")
+    
+    # Шукаємо в правильній таблиці!
+    admin_user = User.objects(email=email).first()
     
     if admin_user:
         # Якщо хтось випадково змінив йому пароль або роль – ми це жорстко виправляємо
@@ -21,17 +22,13 @@ def create_super_admin():
         )
         print(f"Адміністратор {email} вже існував. Права та пароль успішно відновлено!")
     else:
-        # Якщо його видалили – створюємо заново
-        Student(
-            first_name="Головний",
-            last_name="Адміністратор",
-            group_code="Адміністрація", 
-            enrollment_year=2024,
+        # Якщо його немає – створюємо заново у правильній колекції
+        User(
             email=email,
             hashed_password=get_password_hash(password),
             role="admin"
         ).save()
-        print(f"Супер-адміністратор {email} успішно створений з нуля!")
+        print(f"Супер-адміністратор {email} успішно створений у таблиці User!")
 
 if __name__ == "__main__":
     create_super_admin()
